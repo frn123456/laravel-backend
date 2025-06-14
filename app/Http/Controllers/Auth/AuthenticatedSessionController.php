@@ -30,8 +30,8 @@ class AuthenticatedSessionController extends Controller
             ], 401);
         }
 
-        // // Regenerate the session to prevent session fixation attacks
-        // $request->session()->regenerate();
+        // Generates a new session ID without destroying the current session to prevent session fixation attacks
+        $request->session()->regenerate();
 
         return response()->json([
             'user' => Auth::user(), // Returns authenticated user
@@ -101,10 +101,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
+        Auth::guard('web')->logout();//Logs out currently authenticated user    
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->session()->invalidate();//Completely clears all session data and invalidates the session
+
+        $request->session()->regenerateToken();//Regenerates the csrf token
 
         return response()->json([
             'message' => 'Logout successful'
