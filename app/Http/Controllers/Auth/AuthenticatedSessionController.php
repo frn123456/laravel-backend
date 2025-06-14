@@ -82,11 +82,11 @@ class AuthenticatedSessionController extends Controller
         )
         // Returns an error if the user input is incorrect
         {
-            return [
+            return response()->json([
                 'errors' => [
                     'email' => ['Invalid credentials']
                 ]
-            ];
+            ], 422);
         }
 
         //Generates a token for the authenticated user from the database
