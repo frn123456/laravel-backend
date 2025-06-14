@@ -18,24 +18,30 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    // public function store(Request $request)
-    // {
-    //     $fields = $request->validate([
-    //         'name' => ['required', 'string', 'max:255'],
-    //         'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-    //         'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    //     ]);
+    public function store(Request $request)
+    {
+        $fields = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
 
-    //     $user = User::create($fields);
+       $user = User::create([
+            'name' => $fields['name'],
+            'email' => $fields['email'],
+            'password' => bcrypt($fields['password']), // Hash password
+        ]);
 
-    //     $token = $user->createToken($request->name);
+        $token = $user->createToken('auth_token');
 
-    //     return [
-    //         'user' => $user,
-    //         'token' => $token->plainTextToken
-    //     ];
-    // }
+        return [
+            'user' => $user,
+            'token' => $token->plainTextToken
+        ];
+    }
 
+    /* use for cookies only 
+    
     public function store(Request $request)
     {
         $fields = $request->validate([
@@ -59,30 +65,6 @@ class RegisteredUserController extends Controller
             'user' => $user,
             'message' => 'User registered successfully'
         ]);
-    }
+    } */
 
-    // public function store(Request $request)
-    // {
-    //     $fields = $request->validate([
-    //         'name' => ['required', 'string', 'max:255'],
-    //         'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-    //         'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    //     ]);
-
-    //     // Create User
-    //     $user = User::create([
-    //         'name' => $fields['name'],
-    //         'email' => $fields['email'],
-    //         'password' => bcrypt($fields['password']),
-    //     ]);
-
-    //     // Log in the user (Creates session & cookie)
-    //     Auth::login($user);
-
-    //     // Return the authenticated user
-    //     return response()->json([
-    //         'user' => $user,
-    //         'message' => 'User registered successfully'
-    //     ]);
-    // }
 }

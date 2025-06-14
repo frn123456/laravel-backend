@@ -15,7 +15,9 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(Request $request)
+   /* use for cookies only  
+   
+   public function store(Request $request)
     {
         // Validate user inputs
         $request->validate([
@@ -37,7 +39,7 @@ class AuthenticatedSessionController extends Controller
             'user' => Auth::user(), // Returns authenticated user
             'message' => 'Login successful'
         ]);
-    }
+    } */
 
     // public function store(Request $request)
     // {
@@ -59,42 +61,42 @@ class AuthenticatedSessionController extends Controller
     // }
 
 
-    // public function store(Request $request)
-    // {
-    //     //Validate the inputs of the user 
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'password' => 'required'
-    //     ]);
+    public function store(Request $request)
+    {
+        //Validate the inputs of the user 
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-    //     //Fetches a user from the user table by searching for an email that matches the email input of the user  
-    //     $user = User::where('email', $request->email)->first();
+        //Fetches a user from the user table by searching for an email that matches the email input of the user  
+        $user = User::where('email', $request->email)->first();
 
-    //     // Checks if the user exists in the user table and if yes, checks if the password input of the user matches 
-    //     // that of the hashed password stored in the database
-    //     if (
-    //         !$user || !Hash::check(
-    //             $request->password,
-    //             $user->password
-    //         )
-    //     )
-    //     // Returns an error if the user input is incorrect
-    //     {
-    //         return [
-    //             'errors' => [
-    //                 'email' => ['Invalid credentials']
-    //             ]
-    //         ];
-    //     }
+        // Checks if the user exists in the user table and if yes, checks if the password input of the user matches 
+        // that of the hashed password stored in the database
+        if (
+            !$user || !Hash::check(
+                $request->password,
+                $user->password
+            )
+        )
+        // Returns an error if the user input is incorrect
+        {
+            return [
+                'errors' => [
+                    'email' => ['Invalid credentials']
+                ]
+            ];
+        }
 
-    //     //Generates a token for the authenticated user from the database
-    //     $token = $user->createToken($user->name);
+        //Generates a token for the authenticated user from the database
+        $token = $user->createToken('auth_token');
 
-    //     return [
-    //         'user' => $user,
-    //         'token' => $token->plainTextToken
-    //     ];
-    // }
+        return [
+            'user' => $user,
+            'token' => $token->plainTextToken
+        ];
+    }
 
     /**
      * Destroy an authenticated session.
