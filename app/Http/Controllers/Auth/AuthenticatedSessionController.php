@@ -94,7 +94,8 @@ class AuthenticatedSessionController extends Controller
 
         return [
             'user' => $user,
-            'token' => $token->plainTextToken
+            'token' => $token->plainTextToken,
+            'message' => 'Login successful'
         ];
     }
 
@@ -115,10 +116,10 @@ class AuthenticatedSessionController extends Controller
     } */
 
     public function destroy(Request $request)
-{
-    $request->user()->tokens()->delete(); // Deletes all tokens for the user
+    {
+        $request->user()->tokens()->delete(); // Deletes all tokens for the user
 
-    return response()->json(['message' => 'Logged out successfully']);
-}
+        return response()->json(['message' => 'Logged out successfully']);
+    }
 
 }

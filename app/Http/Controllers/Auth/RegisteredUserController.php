@@ -36,7 +36,8 @@ class RegisteredUserController extends Controller
 
         return [
             'user' => $user,
-            'token' => $token->plainTextToken
+            'token' => $token->plainTextToken,
+            'message' => 'User registered successfully'
         ];
     }
 
