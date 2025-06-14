@@ -30,8 +30,8 @@ class AuthenticatedSessionController extends Controller
             ], 401);
         }
 
-        // Regenerate the session to prevent session fixation attacks
-        $request->session()->regenerate();
+        // // Regenerate the session to prevent session fixation attacks
+        // $request->session()->regenerate();
 
         return response()->json([
             'user' => Auth::user(), // Returns authenticated user
