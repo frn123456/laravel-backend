@@ -12,9 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //  $middleware->api(prepend: [
+          $middleware->api(prepend: [
         //      \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-        //  ]);
+          \Illuminate\Session\Middleware\StartSession::class, // Needed for session-based auth
+         ]);
+              
+
+        
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
