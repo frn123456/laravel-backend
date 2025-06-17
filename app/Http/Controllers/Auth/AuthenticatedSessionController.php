@@ -100,7 +100,7 @@ class AuthenticatedSessionController extends Controller
             'refresh_token',
             $refreshToken,
             60 * 24 * 7, // 7 days
-            null, // Path
+            '/', // Path
             '.up.railway.app', // ✅ Domain
             true, // Secure (HTTPS)
             true, // HttpOnly
