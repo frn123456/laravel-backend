@@ -96,12 +96,22 @@ class AuthenticatedSessionController extends Controller
         //Generates a refresh token
         $refreshToken = bin2hex(random_bytes(32)); // Generate a refresh token
 
-        //Sets the refresh token as a cookie
-        Cookie::queue('refresh_token', $refreshToken, 60*24*7,null,null,true,true,false,'None');
-        
+        Cookie::queue(
+            'refresh_token',
+            $refreshToken,
+            60 * 24 * 7, // 7 days
+            null, // Path
+            '.up.railway.app', // ✅ Domain
+            true, // Secure (HTTPS)
+            true, // HttpOnly
+            false, // Raw
+            'None' // SameSite
+        );
+
+
         //Saves the refresh token in the database
-         $user -> refresh_token = $refreshToken;
-         $user -> save();
+        $user->refresh_token = $refreshToken;
+        $user->save();
 
         return [
             'user' => $user,
