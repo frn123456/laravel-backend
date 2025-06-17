@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 
 
 class AuthenticatedSessionController extends Controller
@@ -72,8 +73,8 @@ class AuthenticatedSessionController extends Controller
         //Fetches a user from the user table by searching for an email that matches the email input of the user  
         $user = User::where('email', $request->email)->first();
 
-        // Checks if the user exists in the user table and if yes, checks if the password input of the user matches 
-        // that of the hashed password stored in the database
+        /*  Checks if the user exists in the user table and if yes, checks if the password input of the user matches 
+        that of the hashed password stored in the database */
         if (
             !$user || !Hash::check(
                 $request->password,
@@ -92,11 +93,38 @@ class AuthenticatedSessionController extends Controller
         //Generates a token for the authenticated user from the database
         $token = $user->createToken('auth_token');
 
+        //Generates a refresh token
+        $refreshToken = bin2hex(random_bytes(32)); // Generate a refresh token
+
+        //Sets the refresh token as a cookie
+        Cookie::queue('refresh_token', $refreshToken, 60*24*7,null,null,true,true,false,'None');
+        
+        //Saves the refresh token in the database
+         $user -> refresh_token = $refreshToken;
+         $user -> save();
+
         return [
             'user' => $user,
             'token' => $token->plainTextToken,
             'message' => 'Login successful'
         ];
+    }
+
+    public function refresh(Request $request)
+    {
+        $refreshToken = $request->cookie('refresh_token');
+
+        if (!$refreshToken) {
+            return response()->json(['message' => 'Refresh token not found'], 401);
+        }
+
+        $user = User::where('refresh_token', $refreshToken)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid refresh token'], 401);
+        }
+
+        return response()->json(['access_token' => $user->createToken('auth_token')->plainTextToken]);
     }
 
     /**
@@ -118,6 +146,8 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request)
     {
         $request->user()->tokens()->delete(); // Deletes all tokens for the user
+
+        Cookie::queue(Cookie::forget("refresh_token"));
 
         return response()->json(['message' => 'Logged out successfully']);
     }
