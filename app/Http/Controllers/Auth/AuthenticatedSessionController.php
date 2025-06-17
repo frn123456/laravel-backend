@@ -145,8 +145,6 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request)
     {
-        $request->user()->tokens()->delete(); // Deletes all tokens for the user
-
         Cookie::queue(Cookie::forget("refresh_token"));
 
         return response()->json(['message' => 'Logged out successfully']);
